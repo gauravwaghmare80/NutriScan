@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Nutrition Details</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Nutrition Information</h1>
+    </header>
+    <main>
+        <h2>{{ product_name }}</h2>
+        {% if image_url %}
+            <img src="{{ image_url }}" alt="Product Image" width="200">
+        {% endif %}
+        <p><strong>Calories:</strong> {{ calories }} kcal</p>
+        <p><strong>Proteins:</strong> {{ proteins }} g</p>
+        <p><strong>Carbohydrates:</strong> {{ carbohydrates }} g</p>
+        <p><strong>Fats:</strong> {{ fats }} g</p>
+        <a href="{% url 'home' %}">Scan Another</a>
+    </main>
+</body>
+</html>

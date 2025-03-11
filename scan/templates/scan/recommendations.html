@@ -1,0 +1,27 @@
+{% extends 'scan/base.html' %}  <!-- Extend base template if available -->
+
+{% block content %}
+<div class="container">
+    <h2>Personalized Food Recommendations</h2>
+    
+    {% if recommendations %}
+        <ul>
+            {% for food in recommendations %}
+                <li>
+                    <strong>{{ food.product_name }}</strong> <br>
+                    Calories: {{ food.calories }} kcal <br>
+                    Proteins: {{ food.proteins }}g <br>
+                    Carbohydrates: {{ food.carbohydrates }}g <br>
+                    Fats: {{ food.fats }}g <br>
+                    {% if food.image_url %}
+                        <img src="{{ food.image_url }}" alt="{{ food.product_name }}" width="100">
+                    {% endif %}
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recommendations available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

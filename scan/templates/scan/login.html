@@ -1,0 +1,28 @@
+{% extends "scan/base.html" %}  {# Update path if needed #}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post">
+    {% csrf_token %}
+    
+    <!-- Render Django form if using AuthenticationForm -->
+    {% if form %}
+        {{ form.as_p }}
+    {% else %}
+        <label for="username">Username:</label>
+        <input type="text" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" required><br><br>
+    {% endif %}
+
+    <button type="submit">Login</button>
+    <button type="button"><a href="{% url 'register' %}">Register</a></button>
+</form>
+
+<!-- Display error message if authentication fails -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% endblock %}
