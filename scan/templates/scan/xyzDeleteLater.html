@@ -1,0 +1,400 @@
+folloing is the django htmls .. give me improved codes for ui and other functionallity  ..
+templates/scan/base.html is as follows ... 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriScan{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static "css/style.css" %}">
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg " style="background-color: #198754; ">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">NutriScan</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav " >
+              <li class="nav-item " style="color:white;">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">{{request.user}}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <main>
+        {% block content %}
+            <!-- Content from child templates will go here -->
+        {% endblock %}
+    </main>
+    {% comment %} <footer class="footer w-100">
+        <p class="text-center">© 2025 NutriScan. All rights reserved.</p>
+    </footer> {% endcomment %}
+    {% comment %} <p></p> {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+ 
+</body>
+</html>
+
+templates/scan/bmi_bmr_calculator.html is as follows ... 
+
+{% extends "scan/base.html" %}
+
+{% block title %}BMI &amp; BMR Calculator - NutriScan{% endblock title %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-primary text-white text-center py-3">
+    <h1>BMI &amp; BMR Calculator</h1>
+</header>
+
+<!-- Main Content -->
+<main class="container mt-4" style="margin-bottom: 120px;">  {# Adjusted margin-bottom so content isn’t hidden behind the footer #}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="{% url 'bmi_bmr_calculator' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_weight" class="form-label">Weight (kg)</label>
+                    <input type="number" step="any" name="weight" class="form-control" id="id_weight" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_height" class="form-label">Height (cm)</label>
+                    <input type="number" step="any" name="height" class="form-control" id="id_height" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_age" class="form-label">Age (years)</label>
+                    <input type="number" name="age" class="form-control" id="id_age" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="id_gender_male" value="male" required>
+                            <label class="form-check-label" for="id_gender_male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="id_gender_female" value="female">
+                            <label class="form-check-label" for="id_gender_female">Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_activity_level" class="form-label">Activity Level</label>
+                    <select name="activity_level" id="id_activity_level" class="form-select" required>
+                        <option value="1.2">Sedentary (little or no exercise)</option>
+                        <option value="1.375">Lightly active (light exercise/sports 1-3 days/week)</option>
+                        <option value="1.55">Moderately active (moderate exercise/sports 3-5 days/week)</option>
+                        <option value="1.725">Very active (hard exercise/sports 6-7 days a week)</option>
+                        <option value="1.9">Extra active (very hard exercise/physical job &amp; exercise 2x/day)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Calculate</button>
+            </form>
+            {% if result %}
+            <div class="mt-3">
+                <h4>Results</h4>
+                <p><strong>BMI:</strong> {{ result.bmi }}</p>
+                <p><strong>BMR:</strong> {{ result.bmr }}</p>
+            </div>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
+        </div>
+    </div>
+</main>
+{% endblock content %}
+
+templates/scan/diet_plan.html is as follows ... 
+
+{% extends "scan/base.html" %}
+
+{% block title %}Personalized Diet Plan - NutriScan{% endblock title %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-primary text-white text-center py-3">
+    <h1>Personalized Diet Plan</h1>
+</header>
+
+<!-- Main Content -->
+<main class="container mt-4" style="margin-bottom: 120px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form action="{% url 'personalized_diet_plan' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.goal.label_tag }}
+                    {{ form.goal }}
+                </div>
+                <button type="submit" class="btn btn-primary">Get Diet Plan</button>
+            </form>
+            {% if plan %}
+            <div class="mt-4">
+                <h3>{{ plan.title }}</h3>
+                <p>{{ plan.description }}</p>
+                <ul class="list-group">
+                    {% for meal in plan.meals %}
+                    <li class="list-group-item">{{ meal }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
+        </div>
+    </div>
+</main>
+{% endblock content %}
+
+templates/scan/index.html is as follows ... 
+
+{% extends "scan/base.html" %}
+
+{% block title %}NutriScan - Food Nutrition Scanner{% endblock title %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-primary text-white text-center py-3">
+    <h1>NutriScan</h1>
+    <p>Scan barcode, enter food name, calculate BMI &amp; BMR, or get a personalized diet plan</p>
+</header>
+
+<!-- Main Content -->
+<main class="container mt-4">
+    <div class="row">
+        <!-- Food Nutrient Search Section -->
+        <div class="col-md-6 mb-4">
+            <h2>Food Nutrient Search</h2>
+            <form action="{% url 'get_nutrition' %}" method="GET" class="input-group">
+                <input type="text" name="food_item" class="form-control" placeholder="Enter barcode or food name" required>
+                <button type="submit" class="btn btn-success">🔍 Scan</button>
+            </form>
+            {% if error %}
+                <div class="alert alert-danger mt-3">{{ error }}</div>
+            {% endif %}
+        </div>
+
+        <!-- BMI & BMR Calculator Section -->
+        <div class="col-md-6 mb-4">
+            <h2>BMI &amp; BMR Calculator</h2>
+            <form action="{% url 'bmi_bmr_calculator' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_weight" class="form-label">Weight (kg)</label>
+                    <input type="number" step="any" name="weight" class="form-control" id="id_weight" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_height" class="form-label">Height (cm)</label>
+                    <input type="number" step="any" name="height" class="form-control" id="id_height" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_age" class="form-label">Age (years)</label>
+                    <input type="number" name="age" class="form-control" id="id_age" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="id_gender_male" value="male" required>
+                            <label class="form-check-label" for="id_gender_male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="id_gender_female" value="female">
+                            <label class="form-check-label" for="id_gender_female">Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_activity_level" class="form-label">Activity Level</label>
+                    <select name="activity_level" id="id_activity_level" class="form-select" required>
+                        <option value="1.2">Sedentary (little or no exercise)</option>
+                        <option value="1.375">Lightly active (light exercise/sports 1-3 days/week)</option>
+                        <option value="1.55">Moderately active (moderate exercise/sports 3-5 days/week)</option>
+                        <option value="1.725">Very active (hard exercise/sports 6-7 days a week)</option>
+                        <option value="1.9">Extra active (very hard exercise/physical job &amp; exercise 2x/day)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Calculate</button>
+            </form>
+            {% if bmi and bmr %}
+            <div class="mt-3">
+                <h4>Results</h4>
+                <p><strong>BMI:</strong> {{ bmi }}</p>
+                <p><strong>BMR:</strong> {{ bmr }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Personalized Diet Plan Section -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2 mb-4">
+            <h2>Personalized Diet Plan</h2>
+            <form action="{% url 'personalized_diet_plan' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Select Your Goal</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="goal" id="goal_loss" value="loss" required>
+                        <label class="form-check-label" for="goal_loss">Weight Loss</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="goal" id="goal_gain" value="gain">
+                        <label class="form-check-label" for="goal_gain">Muscle Gain</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="goal" id="goal_maintain" value="maintain">
+                        <label class="form-check-label" for="goal_maintain">Maintenance</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Get Diet Plan</button>
+            </form>
+            {% if plan %}
+            <div class="mt-4">
+                <h3>{{ plan.title }}</h3>
+                <p>{{ plan.description }}</p>
+                <ul class="list-group">
+                    {% for meal in plan.meals %}
+                    <li class="list-group-item">{{ meal }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock content %}
+
+templates/scan/login.html is as follows ... 
+
+{% extends "scan/base.html" %}  {# Update path if needed #}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post">
+    {% csrf_token %}
+    
+    <!-- Render Django form if using AuthenticationForm -->
+    {% if form %}
+        {{ form.as_p }}
+    {% else %}
+        <label for="username">Username:</label>
+        <input type="text" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" required><br><br>
+    {% endif %}
+
+    <button type="submit">Login</button>
+    <button type="button"><a href="{% url 'register' %}">Register</a></button>
+</form>
+
+<!-- Display error message if authentication fails -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% endblock %}
+
+templates/scan/nutrition_result.html is as follows ... 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Nutrition Details</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Nutrition Information</h1>
+    </header>
+    <main>
+        <h2>{{ product_name }}</h2>
+        {% if image_url %}
+            <img src="{{ image_url }}" alt="Product Image" width="200">
+        {% endif %}
+        <p><strong>Calories:</strong> {{ calories }} kcal</p>
+        <p><strong>Proteins:</strong> {{ proteins }} g</p>
+        <p><strong>Carbohydrates:</strong> {{ carbohydrates }} g</p>
+        <p><strong>Fats:</strong> {{ fats }} g</p>
+        <a href="{% url 'home' %}">Scan Another</a>
+    </main>
+</body>
+</html>
+
+templates/scan/recomendations.html is as follows ... 
+
+{% extends 'scan/base.html' %}  <!-- Extend base template if available -->
+
+{% block content %}
+<div class="container">
+    <h2>Personalized Food Recommendations</h2>
+    
+    {% if recommendations %}
+        <ul>
+            {% for food in recommendations %}
+                <li>
+                    <strong>{{ food.product_name }}</strong> <br>
+                    Calories: {{ food.calories }} kcal <br>
+                    Proteins: {{ food.proteins }}g <br>
+                    Carbohydrates: {{ food.carbohydrates }}g <br>
+                    Fats: {{ food.fats }}g <br>
+                    {% if food.image_url %}
+                        <img src="{{ food.image_url }}" alt="{{ food.product_name }}" width="100">
+                    {% endif %}
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recommendations available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+templates/scan/register.html is as follows ... 
+
+{% extends "scan/base.html" %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+    <br>
+    <a href="{% url 'login' %}">Login</a>
+</form>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
