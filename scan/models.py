@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     age = models.IntegerField(null=True, blank=True)
@@ -50,3 +51,10 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
     else:
         instance.userprofile.save()
+
+
+# If you want to create profiles for existing users, 
+# put this in a management command or a migration:
+def create_profiles_for_existing_users():
+    for user in User.objects.all():
+        UserProfile.objects.get_or_create(user=user)

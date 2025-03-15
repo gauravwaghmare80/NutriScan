@@ -126,6 +126,7 @@
                                     <option value="1.9" {% if form.activity_level.value == '1.9' %}selected{% endif %}>Extra active (very hard exercise/physical job &amp; exercise 2x/day)</option>
                                 </select>
                             </div>
+                                               
                             
                             {% if request.user.is_authenticated %}
                             <div class="col-12">
@@ -143,3 +144,38 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if result %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Your Results</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>BMI:</strong> {{ result.bmi }} ({{ result.bmi_category }})</p>
+                <p><strong>BMR:</strong> {{ result.bmr }} kcal/day</p>
+
+                {% if result.weight_difference %}
+                    {% if result.calories_gain %}
+                        <p><strong>You need to gain:</strong> {{ result.weight_difference }} kg</p>
+                        <p><strong>Recommended Calories for Weight Gain:</strong> {{ result.calories_gain }} kcal/day</p>
+                    {% elif result.calories_loss %}
+                        <p><strong>You need to lose:</strong> {{ result.weight_difference }} kg</p>
+                        <p><strong>Recommended Calories for Weight Loss:</strong> {{ result.calories_loss }} kcal/day</p>
+                    {% endif %}
+                {% endif %}
+
+                {% if result.calories_maintenance %}
+                    <p><strong>Recommended Maintenance Calories:</strong> {{ result.calories_maintenance }} kcal/day</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

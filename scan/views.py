@@ -97,6 +97,7 @@ def get_nutrition(request):
         recommendations = []
         messages.warning(request, "Please complete your profile to get personalized recommendations")
 
+
     if request.method == "GET" and 'food_item' in request.GET:
         form = FoodSearchForm(request.GET)
         if form.is_valid():
@@ -109,10 +110,9 @@ def get_nutrition(request):
             )
             
             nutrition_data = fetch_usda_nutrition(food_item)
-            
             if "error" in nutrition_data:
                 messages.error(request, nutrition_data["error"])
-                return render(request, 'scan/nutrition_search.html', {
+                return render(request, 'scan/food_nutrition_search.html', {
                     'form': form,
                     'recommendations': recommendations
                 })
@@ -122,7 +122,7 @@ def get_nutrition(request):
                 'recommendations': recommendations
             })
 
-    return render(request, 'scan/nutrition_search.html', {
+    return render(request, 'scan/food_nutrition_search.html', {
         'form': form,
         'recommendations': recommendations
     })
@@ -213,7 +213,12 @@ def edit_profile(request):
     return render(request, 'scan/edit_profile.html', {'form': form})
 
 
-def bmi_bmr_calculator(request):
+from django.shortcuts import render
+from django.contrib import messages
+from .forms import BMIBMRForm
+from .models import UserProfile
+
+def bmi_bmr_calculator(request): 
     """Calculate BMI and BMR based on form inputs"""
     result = {}
     if request.method == 'POST':
@@ -225,8 +230,10 @@ def bmi_bmr_calculator(request):
             gender = form.cleaned_data['gender']
             activity_factor = float(form.cleaned_data['activity_level'])
             
+            # Convert height to meters
+            height_m = height / 100  
+            
             # BMI Calculation: weight (kg) / (height in m)^2
-            height_m = height / 100  # converting cm to meters
             bmi = weight / (height_m ** 2)
             
             # BMR Calculation using the Harris-Benedict Equation
@@ -253,17 +260,34 @@ def bmi_bmr_calculator(request):
                 bmi_category = "Overweight"
             else:
                 bmi_category = "Obesity"
-            
+
+            # Calculate ideal weight range (BMI 18.5 - 24.9)
+            ideal_weight_low = 18.5 * (height_m ** 2)
+            ideal_weight_high = 24.9 * (height_m ** 2)
+
+            # Determine weight difference
+            weight_difference = 0
+            if bmi < 18.5:  # Underweight
+                weight_difference = round(ideal_weight_low - weight, 2)
+            elif bmi >= 25:  # Overweight or Obese
+                weight_difference = round(weight - ideal_weight_high, 2)
+
+            # Prepare result dictionary
             result = {
                 'bmi': round(bmi, 2),
                 'bmi_category': bmi_category,
                 'bmr': round(bmr, 2),
-                'bmr_adjusted': round(bmr_adjusted, 2),
-                'calories_maintenance': calories_maintenance,
-                'calories_loss': calories_loss,
-                'calories_gain': calories_gain
             }
-            
+
+            if bmi < 18.5:  # Underweight
+                result['calories_gain'] = calories_gain
+                result['weight_difference'] = weight_difference
+            elif bmi >= 25:  # Overweight or Obese
+                result['calories_loss'] = calories_loss
+                result['weight_difference'] = weight_difference
+            else:  # Normal weight
+                result['calories_maintenance'] = calories_maintenance
+
             # If user is logged in, optionally update their profile
             if request.user.is_authenticated and request.POST.get('update_profile'):
                 try:
@@ -292,6 +316,7 @@ def bmi_bmr_calculator(request):
         form = BMIBMRForm(initial=initial_data)
         
     return render(request, 'scan/bmi_bmr_calculator.html', {'form': form, 'result': result})
+
 
 
 def personalized_diet_plan(request):
@@ -497,3 +522,6 @@ def personalized_diet_plan(request):
         form = DietPlanForm(initial={'goal': initial_goal} if initial_goal else None)
         
     return render(request, 'scan/diet_plan.html', {'form': form, 'plan': plan})
+
+def search(request):
+    return render(request,'scan/food_nutrition_search.html')

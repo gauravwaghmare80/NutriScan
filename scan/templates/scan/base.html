@@ -122,6 +122,28 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'nutrition/search' in request.path %}active{% endif %}" href="{% url 'get_nutrition' %}">
+                            <i class="fas fa-search me-1"></i> Nutrition
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'bmi-bmr' in request.path %}active{% endif %}" href="{% url 'bmi_bmr_calculator' %}">
+                            <i class="fas fa-calculator me-1"></i> BMI/BMR
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'diet-plan' in request.path %}active{% endif %}" href="{% url 'personalized_diet_plan' %}">
+                            <i class="fas fa-utensils me-1"></i> Diet Plan
+                        </a>
+                    </li>
+                </ul>
                 <ul class="navbar-nav">
                     {% if request.user.is_authenticated %}
                     <li class="nav-item dropdown">

@@ -168,7 +168,7 @@
             {% if plan %}
             <div class="diet-plan-container">
                 <div class="plan-header">
-                    <h2><i class="fas fa-clipboard-list me-2"></i>{{ plan.title }}</h2>
+                    <h2><i class="fas fa-clipboard-list me-2"></i> {{ plan.title }}</h2>
                     <p class="lead">{{ plan.description }}</p>
                     
                     <div class="nutritional-info">
@@ -190,30 +190,31 @@
                         </div>
                     </div>
                 </div>
-                
+            
+                <div class="plan-principles">
+                    <h4>Guiding Principles</h4>
+                    <ul>
+                        {% for principle in plan.principles %}
+                        <li>{{ principle }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            
                 <div class="meal-plan">
                     {% for meal in plan.meals %}
                     <div class="card meal-card">
                         <div class="card-body">
-                            <div class="meal-time">{{ meal.time }}</div>
-                            <h5 class="card-title">{{ meal.title }}</h5>
-                            <div class="meal-items">
-                                {% for item in meal.items %}
-                                <div class="meal-item">
-                                    <i class="fas fa-check-circle me-2 text-success"></i>{{ item }}
-                                </div>
+                            <h5 class="card-title">{{ meal.name }}</h5>
+                            <ul>
+                                {% for option in meal.options %}
+                                <li>{{ option }}</li>
                                 {% endfor %}
-                            </div>
-                            {% if meal.notes %}
-                            <div class="meal-notes mt-2">
-                                <small><i class="fas fa-info-circle me-1"></i>{{ meal.notes }}</small>
-                            </div>
-                            {% endif %}
+                            </ul>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
-                
+            
                 <div class="mt-4">
                     <a href="{% url 'personalized_diet_plan' %}" class="btn btn-outline-primary">
                         <i class="fas fa-sync-alt me-2"></i>Regenerate Plan
@@ -222,7 +223,8 @@
                         <i class="fas fa-print me-2"></i>Print Plan
                     </a>
                 </div>
-                
+            </div>
+            
                 <!-- Button to save plan (only visible when user is logged in) -->
                 {% if user.is_authenticated %}
                 <button class="btn btn-primary btn-lg rounded-circle save-plan-btn" 

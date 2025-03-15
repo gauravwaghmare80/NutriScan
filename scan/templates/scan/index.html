@@ -73,7 +73,7 @@
         {% else %}
         <div class="mt-4">
             <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg me-2"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-            <a href="{% url 'get_nutrition' %}" class="btn btn-outline-light btn-lg"><i class="fas fa-search me-2"></i>Search Food</a>
+            <a href="{% url 'search' %}" class="btn btn-primary btn-lg me-2"><i class="fas fa-tachometer-alt me-2"></i>Search Food</a>
         </div>
         {% endif %}
     </div>
@@ -122,20 +122,36 @@
     <div class="row g-4">
         <!-- Food Nutrient Search -->
         <div class="col-lg-6">
-            <div class="card action-card">
-                <div class="card-header">
-                    <i class="fas fa-search me-2"></i> Food Nutrition Search
-                </div>
-                <div class="card-body">
-                    <form action="{% url 'get_nutrition' %}" method="GET" class="d-flex">
-                        <input type="text" name="food_item" class="form-control me-2" placeholder="Enter food name (e.g., apple, chicken)" required>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
+    <div class="card action-card">
+        <div class="card-header">
+            <i class="fas fa-search me-2"></i> Food Nutrition Search
         </div>
+        <div class="card-body">
+            <form action="{% url 'get_nutrition' %}" method="GET" class="d-flex">
+                <input type="text" name="food_item" class="form-control me-2" placeholder="Enter food name (e.g., apple, cherry)" required>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            
+            <!-- Nutrition Data Display -->
+            {% if product_name %}
+            <div class="mt-4">
+                <h2>{{ product_name }}</h2>
+                {% if image_url %}
+                    <img src="{{ image_url }}" alt="Product Image" width="200" class="img-fluid mt-2">
+                {% endif %}
+                <p><strong>Calories:</strong> {{ calories }} kcal</p>
+                <p><strong>Proteins:</strong> {{ proteins }} g</p>
+                <p><strong>Carbohydrates:</strong> {{ carbohydrates }} g</p>
+                <p><strong>Fats:</strong> {{ fats }} g</p>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary mt-2">Scan Another</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
 
         <!-- BMI & BMR Quick Calculate -->
         <div class="col-lg-6">
@@ -170,7 +186,7 @@
 </section>
 
 <!-- Diet Goals Section -->
-<section class="container mb-5">
+{% comment %} <section class="container mb-5">
     <h2 class="text-center mb-4">Choose Your Nutrition Goal</h2>
     <div class="row g-4">
         <div class="col-md-4">
@@ -216,7 +232,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> {% endcomment %}
 
 {% block extra_js %}
 <script>

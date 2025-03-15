@@ -1,0 +1,475 @@
+{% extends 'scan/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | NutriScan{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        border-left: 5px solid var(--primary-color);
+    }
+    .stat-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+    }
+    .recent-search-item {
+        border-left: 3px solid var(--primary-color);
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .recent-search-item:hover {
+        background-color: #f0f0f0;
+        transform: translateX(5px);
+    }
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+    }
+    .bmi-indicator {
+        position: relative;
+        height: 20px;
+        background: linear-gradient(to right, #2ecc71, #f1c40f, #e74c3c);
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    .bmi-marker {
+        position: absolute;
+        width: 12px;
+        height: 25px;
+        background-color: #333;
+        border-radius: 3px;
+        top: -5px;
+        transform: translateX(-50%);
+    }
+    .bmi-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: #666;
+    }
+    .profile-complete-bar {
+        height: 15px;
+    }
+    .quick-actions a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .action-card {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .action-card:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .action-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+            <a href="{% url 'edit_profile' %}" class="btn btn-light">
+                <i class="fas fa-user-edit me-1"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-4">
+        <!-- Profile Summary Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Profile Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% if profile %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar bg-primary text-white me-3" style="width: 60px; height: 60px; font-size: 24px;">
+                                {{ request.user.username.0|upper }}
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{{ request.user.username }}</h5>
+                                <p class="text-muted mb-0">Member since {{ request.user.date_joined|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                        
+                        <ul class="list-group list-group-flush">
+                            {% if profile.age %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-birthday-cake me-2"></i>Age</span>
+                                    <span class="badge bg-primary rounded-pill">{{ profile.age }} years</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% if profile.height %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-ruler-vertical me-2"></i>Height</span>
+                                    <span class="badge bg-primary rounded-pill">{{ profile.height }} cm</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% if profile.weight %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-weight me-2"></i>Weight</span>
+                                    <span class="badge bg-primary rounded-pill">{{ profile.weight }} kg</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% if profile.activity_level %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-running me-2"></i>Activity Level</span>
+                                    <span class="badge bg-primary rounded-pill">{{ profile.activity_level|title }}</span>
+                                </li>
+                            {% endif %}
+                            
+                            {% if profile.goal %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-bullseye me-2"></i>Goal</span>
+                                    <span class="badge bg-primary rounded-pill">{{ profile.goal }}</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                        
+                        {% if not profile.age or not profile.height or not profile.weight or not profile.activity_level or not profile.goal %}
+                            <div class="mt-3">
+                                <p class="small text-muted mb-1">Profile completion</p>
+                                {% with completed=profile.age|yesno:"1,0"|add:profile.height|yesno:"1,0"|add:profile.weight|yesno:"1,0"|add:profile.activity_level|yesno:"1,0"|add:profile.goal|yesno:"1,0" %}
+                                {% with percentage=completed|floatformat:0 %}
+                                <div class="progress profile-complete-bar">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ percentage }}%" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">{{ percentage }}%</div>
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                                <div class="text-center mt-2">
+                                    <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-primary">Complete Your Profile</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
+                            <h5>Profile Not Set Up</h5>
+                            <p class="text-muted">Complete your profile to unlock personalized features.</p>
+                            <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                                <i class="fas fa-user-edit me-1"></i> Set Up Profile
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Health Stats Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Health Stats</h5>
+                </div>
+                <div class="card-body">
+                    {% if bmi %}
+                        <div class="text-center mb-4">
+                            <div class="stat-icon mb-2">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="mb-0">{{ bmi }}</h3>
+                            <p class="text-muted mb-0">Your BMI</p>
+                            
+                            <div class="bmi-indicator mt-3">
+                                {% with bmi_percent=bmi %}
+                                <div class="bmi-marker" style="left: {{ bmi_percent }}%;"></div>
+                                {% endwith %}
+                            </div>
+                            <div class="bmi-labels">
+                                <span>Underweight</span>
+                                <span>Normal</span>
+                                <span>Overweight</span>
+                                <span>Obese</span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                {% if bmi < 18.5 %}
+                                    <span class="badge bg-info">Underweight</span>
+                                {% elif bmi < 25 %}
+                                    <span class="badge bg-success">Normal weight</span>
+                                {% elif bmi < 30 %}
+                                    <span class="badge bg-warning text-dark">Overweight</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Obesity</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Health Recommendations</h6>
+                            <ul class="small">
+                                {% if bmi < 18.5 %}
+                                    <li>Focus on nutrient-dense foods</li>
+                                    <li>Consider adding more calories to your diet</li>
+                                    <li>Consult with a healthcare provider</li>
+                                {% elif bmi < 25 %}
+                                    <li>Maintain your healthy lifestyle</li>
+                                    <li>Regular exercise and balanced diet</li>
+                                    <li>Annual health check-ups</li>
+                                {% elif bmi < 30 %}
+                                    <li>Moderate caloric deficit (300-500 calories)</li>
+                                    <li>Increase physical activity</li>
+                                    <li>Focus on whole foods and lean proteins</li>
+                                {% else %}
+                                    <li>Consult with healthcare professionals</li>
+                                    <li>Gradual, sustainable weight loss</li>
+                                    <li>Focus on overall health, not just weight</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calculator fa-4x text-muted mb-3"></i>
+                            <h5>No BMI Data Available</h5>
+                            <p class="text-muted">Complete your profile with height and weight to calculate your BMI.</p>
+                            <a href="{% url 'bmi_bmr_calculator' %}" class="btn btn-primary">
+                                <i class="fas fa-calculator me-1"></i> Calculate BMI
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row quick-actions">
+                        <div class="col-6 mb-3">
+                            <a href="{% url 'get_nutrition' %}">
+                                <div class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <h6>Food Search</h6>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{% url 'bmi_bmr_calculator' %}">
+                                <div class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-calculator"></i>
+                                    </div>
+                                    <h6>BMI Calc</h6>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{% url 'personalized_diet_plan' %}">
+                                <div class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <h6>Diet Plan</h6>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{% url 'edit_profile' %}">
+                                <div class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-user-edit"></i>
+                                    </div>
+                                    <h6>Edit Profile</h6>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6><i class="fas fa-lightbulb me-2"></i>Did you know?</h6>
+                        <div class="card bg-light">
+                            <div class="card-body p-3">
+                                <p class="small mb-0">
+                                    {% now "H"|add:"0"|divisibleby:3 as time_check %}
+                                    {% if time_check %}
+                                    Drinking water before meals can help reduce overall calorie intake.
+                                    {% elif time_check|divisibleby:2 %}
+                                    Regular physical activity boosts your immune system and mental well-being.
+                                    {% else %}
+                                    Eating a variety of colorful fruits and vegetables ensures you get a wide range of nutrients.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Nutrition Searches</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_searches %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Food Item</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for search in recent_searches %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ search.food_item|title }}</strong>
+                                        </td>
+                                        <td>{{ search.search_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <a href="{% url 'get_nutrition' %}?food_item={{ search.food_item }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-search me-1"></i> Search Again
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                            <h5>No Recent Searches</h5>
+                            <p class="text-muted">Your nutrition search history will appear here.</p>
+                            <a href="{% url 'get_nutrition' %}" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Search Food Nutrition
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goals Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Nutrition & Fitness Goals</h5>
+                </div>
+                <div class="card-body">
+                    {% if profile and profile.goal %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            {% if profile.goal == 'weight_loss' %}
+                                                <i class="fas fa-weight me-2 text-danger"></i>Weight Loss
+                                            {% elif profile.goal == 'muscle_gain' %}
+                                                <i class="fas fa-dumbbell me-2 text-success"></i>Muscle Gain
+                                            {% else %}
+                                                <i class="fas fa-balance-scale me-2 text-primary"></i>Maintenance
+                                            {% endif %}
+                                        </h5>
+                                        <p class="card-text">
+                                            {% if profile.goal == 'weight_loss' %}
+                                                Focus on creating a calorie deficit through diet and exercise. Aim for 1-2 pounds of weight loss per week for sustainable results.
+                                            {% elif profile.goal == 'muscle_gain' %}
+                                                Prioritize protein intake and progressive resistance training. Aim for a slight calorie surplus to support muscle growth.
+                                            {% else %}
+                                                Balance your calorie intake with energy expenditure. Focus on nutrient-dense foods and consistent physical activity.
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'personalized_diet_plan' %}" class="btn btn-sm btn-primary">Get Diet Plan</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-tasks me-2 text-primary"></i>Recommended Steps</h5>
+                                        <ul class="list-group list-group-flush">
+                                            {% if profile.goal == 'weight_loss' %}
+                                                <li class="list-group-item bg-light">Create a 500 calorie deficit daily</li>
+                                                <li class="list-group-item bg-light">Include protein with every meal</li>
+                                                <li class="list-group-item bg-light">Focus on high-volume, low-calorie foods</li>
+                                                <li class="list-group-item bg-light">Regular cardio and strength training</li>
+                                            {% elif profile.goal == 'muscle_gain' %}
+                                                <li class="list-group-item bg-light">Consume 1.6-2.2g protein per kg bodyweight</li>
+                                                <li class="list-group-item bg-light">Progressive overload in resistance training</li>
+                                                <li class="list-group-item bg-light">Slight calorie surplus (200-300 calories)</li>
+                                                <li class="list-group-item bg-light">Adequate recovery and sleep</li>
+                                            {% else %}
+                                                <li class="list-group-item bg-light">Balance macronutrients for your activity level</li>
+                                                <li class="list-group-item bg-light">Maintain consistent exercise routine</li>
+                                                <li class="list-group-item bg-light">Focus on nutrient-dense whole foods</li>
+                                                <li class="list-group-item bg-light">Prioritize sleep and stress management</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-flag fa-4x text-muted mb-3"></i>
+                            <h5>No Goals Set</h5>
+                            <p class="text-muted">Set your nutrition and fitness goals to get personalized recommendations.</p>
+                            <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                                <i class="fas fa-bullseye me-1"></i> Set Your Goals
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any dashboard-specific JavaScript here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: animate the stats on page load
+        const statElements = document.querySelectorAll('.stat-card h3');
+        statElements.forEach(el => {
+            const finalValue = parseFloat(el.textContent);
+            let currentValue = 0;
+            const increment = finalValue / 50;
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    clearInterval(timer);
+                    el.textContent = finalValue;
+                } else {
+                    el.textContent = currentValue.toFixed(1);
+                }
+            }, 10);
+        });
+    });
+</script>
+{% endblock %}

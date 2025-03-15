@@ -3,21 +3,181 @@
 <head>
     <title>Nutrition Details</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-green: #3c8d40;
+            --light-green: #e8f5e9;
+            --medium-green: #a5d6a7;
+            --dark-green: #2e7d32;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .product-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .product-image {
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .product-name {
+            color: var(--dark-green);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .nutrition-card {
+            background-color: var(--light-green);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .nutrition-item {
+            background-color: white;
+            border-left: 4px solid var(--primary-green);
+            padding: 12px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .nutrition-item strong {
+            color: var(--dark-green);
+        }
+        
+        .nutrition-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-green);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .nutrition-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Nutrition Information</h1>
     </header>
+    
     <main>
-        <h2>{{ product_name }}</h2>
-        {% if image_url %}
-            <img src="{{ image_url }}" alt="Product Image" width="200">
-        {% endif %}
-        <p><strong>Calories:</strong> {{ calories }} kcal</p>
-        <p><strong>Proteins:</strong> {{ proteins }} g</p>
-        <p><strong>Carbohydrates:</strong> {{ carbohydrates }} g</p>
-        <p><strong>Fats:</strong> {{ fats }} g</p>
-        <a href="{% url 'home' %}">Scan Another</a>
+        <div class="product-container">
+            <h2 class="product-name">{{ nutrition_data.product_name }}</h2>
+            {% if nutrition_data.image_url %}
+                <img src="{{ nutrition_data.image_url }}" alt="Product Image" class="product-image" width="200">
+            {% endif %}
+        </div>
+        
+        <div class="nutrition-card">
+            <h3>Nutritional Facts</h3>
+            <div class="nutrition-grid">
+                <div class="nutrition-item">
+                    <strong>Calories</strong>
+                    <div class="nutrition-value">{{ nutrition_data.calories }} kcal</div>
+                </div>
+                
+                <div class="nutrition-item">
+                    <strong>Proteins</strong>
+                    <div class="nutrition-value">{{ nutrition_data.proteins }} g</div>
+                </div>
+                
+                <div class="nutrition-item">
+                    <strong>Carbohydrates</strong>
+                    <div class="nutrition-value">{{ nutrition_data.carbohydrates }} g</div>
+                </div>
+                
+                <div class="nutrition-item">
+                    <strong>Fats</strong>
+                    <div class="nutrition-value">{{ nutrition_data.fats }} g</div>
+                </div>
+
+                <div class="nutrition-item">
+                    <strong>Sugars</strong>
+                    <div class="nutrition-value">{{ nutrition_data.sugars }} g</div>
+                </div>
+
+                <div class="nutrition-item">
+                    <strong>Sodium</strong>
+                    <div class="nutrition-value">{{ nutrition_data.sodium }} g</div>
+                </div>
+
+                <div class="nutrition-item">
+                    <strong>Potassium</strong>
+                    <div class="nutrition-value">{{ nutrition_data.potassium }} g</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <a href="{% url 'home' %}" class="btn">
+                <i class="fas fa-barcode"></i> Scan Another Product
+            </a>
+        </div>
     </main>
 </body>
 </html>
