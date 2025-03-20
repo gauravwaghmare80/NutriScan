@@ -122,7 +122,7 @@
                         </div>
                     </div>
                     
-                    <div class="row">
+                  <!--  <div class="row">
                         <div class="col-md-6 form-section">
                             <label class="form-label d-block">Dietary Preferences</label>
                             <div class="form-check form-check-inline">
@@ -137,7 +137,7 @@
                                 <input class="form-check-input" type="checkbox" name="gluten_free" id="gluten_free" {% if dietary_prefs.gluten_free %}checked{% endif %}>
                                 <label class="form-check-label" for="gluten_free">Gluten-Free</label>
                             </div>
-                        </div>
+                        </div>-->
                         
                         <div class="col-md-6 form-section">
                             <label for="calorie_target" class="form-label">Daily Calorie Target</label>
@@ -225,16 +225,18 @@
                 </div>
             </div>
             
-                <!-- Button to save plan (only visible when user is logged in) -->
-                {% if user.is_authenticated %}
-                <button class="btn btn-primary btn-lg rounded-circle save-plan-btn" 
-                        title="Save this plan to your account"
-                        data-bs-toggle="modal" 
-                        data-bs-target="#savePlanModal">
-                    <i class="fas fa-save"></i>
-                </button>
-                {% endif %}
+                
+               
             </div>
+            <!-- Button to save plan (only visible when user is logged in) -->
+            {% if user.is_authenticated %}
+            <button class="btn btn-primary btn-lg save-plan-btn " 
+                    title="Save this plan to your account"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#savePlanModal">
+                <i class="fas fa-save"></i>
+            </button>
+            {% endif %}
             {% else %}
             <div class="text-center mt-5 pt-4">
                 <i class="fas fa-utensils fa-4x text-muted"></i>

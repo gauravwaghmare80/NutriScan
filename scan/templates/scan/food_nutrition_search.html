@@ -6,22 +6,33 @@
     <title>Food Nutrition Search</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
 </head>
 <body>
 
-    
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% elif message.tags == 'info' %}alert-info{% elif message.tags == 'warning' %}alert-warning{% else %}alert-secondary{% endif %} alert-dismissible fade show" role="alert">
+            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% elif message.tags == 'info' %}fa-info-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-bell{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-success text-white">
                         <i class="fas fa-search me-2"></i> Food Nutrition Search
                     </div>
                     <div class="card-body">
                         
                             <form action="{% url 'get_nutrition' %}" method="GET" class="d-flex">
-                            <input type="text" name="food_item" class="form-control me-2" placeholder="Enter food name (e.g., apple, banana)" required>
+                            <input type="text" name="food_item" class="form-control me-2" placeholder="Enter food name (e.g., apple)" required>
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-search"></i>
                             </button>

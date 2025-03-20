@@ -1,0 +1,74 @@
+{% extends 'scan/base.html' %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Complete your profile to get personalized nutrition recommendations and fitness advice.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.age }}
+                                <small class="form-text text-muted">Age in years</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.weight }}
+                                <small class="form-text text-muted">Weight in kilograms (kg)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.height }}
+                            <small class="form-text text-muted">Height in centimeters (cm)</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.activity_level }}
+                            <small class="form-text text-muted">Activity level</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.goal }}
+                            <small class="form-text text-muted">Your fitness goal helps us personalize recommendations</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Profile</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="text-center">
+                        <p class="text-muted mb-0">
+                            <small>
+                                Your information is secure and will only be used to provide personalized recommendations.
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <a href="{% url 'bmi_bmr_calculator' %}" class="btn btn-sm btn-info">
+                    <i class="fas fa-calculator"></i> Calculate BMI/BMR
+                </a>
+                <a href="{% url 'personalized_diet_plan' %}" class="btn btn-sm btn-success">
+                    <i class="fas fa-utensils"></i> Get Diet Plan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

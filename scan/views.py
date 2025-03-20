@@ -6,16 +6,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse
-
+from django.contrib.messages import get_messages
 from .forms import UserRegisterForm, UserProfileForm, BMIBMRForm, DietPlanForm, FoodSearchForm
 from .models import UserProfile, NutritionSearch
 
 
 def home(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     return render(request, 'scan/index.html')
 
 
 def fetch_usda_nutrition(food_name):
+    
     """Fetches nutrition details from USDA API for a given food name."""
     api_key = getattr(settings, "USDA_API_KEY", None)
     if not api_key:
@@ -57,6 +62,7 @@ def fetch_usda_nutrition(food_name):
 
 
 def recommend_foods(user_profile):
+    
     """Suggests foods based on user dietary goals using USDA API."""
     goal = user_profile.goal if user_profile else "maintenance"
     
@@ -87,6 +93,10 @@ def recommend_foods(user_profile):
 
 @login_required(login_url='/login/')
 def get_nutrition(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """View for handling nutrition data search and display"""
     form = FoodSearchForm()
     
@@ -129,22 +139,40 @@ def get_nutrition(request):
 
 
 def register(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Register a new user and create their profile"""
     if request.method == "POST":
         user_form = UserRegisterForm(request.POST)
+        
         if user_form.is_valid():
-            user = user_form.save()
-            username = user_form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}! Please complete your profile.')
+            user = user_form.save()  # Django's UserCreationForm already handles password hashing
+            
+            # Automatically log in the user after successful registration
             login(request, user)
-            return redirect('edit_profile')
+
+            messages.success(request, f'Account created successfully for {user.username}! Please complete your profile.')
+            return redirect('edit_profile')  # Make sure 'edit_profile' exists in urls.py
+        else:
+            # Don't show a generic error - form errors will display automatically in the template
+            pass
     else:
         user_form = UserRegisterForm()
-    
-    return render(request, "scan/register.html", {"user_form": user_form})
+
+    context = {
+        "user_form": user_form
+    }
+
+    return render(request, "scan/register.html", context)
 
 
 def user_login(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Handle user login"""
     if request.method == "POST":
         username = request.POST.get("username")
@@ -163,6 +191,10 @@ def user_login(request):
 
 
 def user_logout(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Handle user logout"""
     logout(request)
     messages.info(request, "You have been logged out successfully!")
@@ -171,6 +203,10 @@ def user_logout(request):
 
 @login_required
 def dashboard(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """User dashboard with profile summary and recent activities"""
     try:
         profile = UserProfile.objects.get(user=request.user)
@@ -195,6 +231,10 @@ def dashboard(request):
 
 @login_required
 def edit_profile(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Edit user profile information"""
     try:
         profile = UserProfile.objects.get(user=request.user)
@@ -219,6 +259,10 @@ from .forms import BMIBMRForm
 from .models import UserProfile
 
 def bmi_bmr_calculator(request): 
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Calculate BMI and BMR based on form inputs"""
     result = {}
     if request.method == 'POST':
@@ -320,6 +364,10 @@ def bmi_bmr_calculator(request):
 
 
 def personalized_diet_plan(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     """Generate a personalized diet plan based on user goals"""
     plan = None
     
@@ -524,4 +572,8 @@ def personalized_diet_plan(request):
     return render(request, 'scan/diet_plan.html', {'form': form, 'plan': plan})
 
 def search(request):
+    # Clear the messages
+    storage = get_messages(request)
+    for _ in storage:  # Iterating through to clear the messages
+        pass  
     return render(request,'scan/food_nutrition_search.html')

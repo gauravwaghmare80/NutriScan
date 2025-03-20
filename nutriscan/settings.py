@@ -129,6 +129,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
-USDA_API_KEY = "JieUOfyUY8eONOP25NcqmvhWijnvoYCYNwgKk922"
+USDA_API_KEY = "5h5qVmYWPd5a25NhlPjgiDnOpz3BICQmMV6vONRR"
 
 #LOGIN_URL = '/login/'
